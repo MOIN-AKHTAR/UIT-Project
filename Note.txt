@@ -1,0 +1,3 @@
+A project given by UIT and the project is that we have to make a shopping cart type of project-
+Inwhich user can login,Signup and the add Item to his/her Cart-
+Happy Coding :)
