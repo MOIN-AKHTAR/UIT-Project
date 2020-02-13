@@ -120,19 +120,24 @@ Logout.addEventListener("click", e => {
 const badge = document.querySelector(".badge");
 // Targetting Span Which Will Show Name Of Currently Logedin User
 const NameSpane = document.querySelector("#userName");
+// Getting All Users-
+const Users = JSON.parse(localStorage.getItem("Users"));
+// Fetching Current User Who LogedIn From LocalStorage
+const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+// Getting Index Of Currently LoggedIn Users
+const LoggedIndex = Users.findIndex(User => User.email === Obj.email);
+
 // This method will count all quantity of product
 const TotalQuantity = User =>
   User.Cart.reduce((Accumalator, Current) => Accumalator + Current.quantity, 0);
 // This method will make the total of item you added to cart
 const TotalAmount = User =>
   User.Cart.reduce((Accumalator, Current) => Accumalator + Current.total, 0);
-// Fetching Current User Who LogedIn From LocalStorage
-const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+
 if (Obj) {
   NameSpane.innerHTML = Obj.firstName + " " + Obj.lastName;
-  const Users = JSON.parse(localStorage.getItem("Users"));
-  const Index = Users.findIndex(User => User.email === Obj.email);
-  badge.innerHTML = TotalQuantity(Users[Index]);
+
+  badge.innerHTML = TotalQuantity(Users[LoggedIndex]);
 } else {
   window.location.assign("../SignUp/SignUp.html");
 }
@@ -169,47 +174,48 @@ const Render = Arr => {
     // Adding Event For Button Add To Cart Of Each Product
     Button.addEventListener("click", e => {
       // First Checking If User LoggedIn Then He/She Will Be Allowed To Go For Furthur Process Otherwise Go Back To SignUp Page
-      const User = JSON.parse(localStorage.getItem("LoginUser"));
-      if (User) {
-        NameSpane.innerHTML = User.firstName + " " + User.lastName;
+      if (Obj) {
+        NameSpane.innerHTML = Obj.firstName + " " + Obj.lastName;
       } else {
         window.location.assign("../SignUp/SignUp.html");
       }
-      // Getting All Users Array To So That We Can Update His/Her Status
-      const Users = JSON.parse(localStorage.getItem("Users"));
-      // Find LogedInUser Index From Users Array
-      const logedInUserIndex = Users.findIndex(U => U.email === User.email);
       // Getting Object Of User Who Is LoggedIn From Users Array Stored In Local Storage
-      const Obj = Users.find(users => users.email === User.email);
+      const UserFromUsers = Users.find(users => users.email === Obj.email);
       // Checking For The Existance Of Item Which We Are Trying To Add To User Object's Cart So That We Can Set Quantity Pefectly-
-      const Index = Obj.Cart.findIndex(Item => Item.id === Arr[index].id);
+      const Index = UserFromUsers.Cart.findIndex(
+        Item => Item.id === Arr[index].id
+      );
       let Item = Arr.find(Item => Item.id === Arr[index].id);
       if (Index < 0) {
         // If Item Is Not Already In The User Cart Array Then This Code Will Run
         Item.quantity = 1;
         Item.total = Item.price;
-        Obj.Cart.push(Item);
+        UserFromUsers.Cart.push(Item);
       } else {
         // If Item I Already In The User Cart Array Then This Code Will Run
-        Item.quantity = Obj.Cart[Index].quantity + 1;
+        Item.quantity = UserFromUsers.Cart[Index].quantity + 1;
         Item.total = Item.price * Item.quantity;
         // Updating Cart Of User Who Is LogedIn
-        const Part1 = Obj.Cart.slice(0, Index);
+        const Part1 = UserFromUsers.Cart.slice(0, Index);
         const Part2 = Item;
         Part1.push(Part2);
-        const Part3 = Obj.Cart.slice(Index + 1, Obj.Cart.length);
+        const Part3 = UserFromUsers.Cart.slice(
+          Index + 1,
+          UserFromUsers.Cart.length
+        );
         const UserItemAdded = Part1.concat(Part3);
-        Obj.Cart = UserItemAdded;
+        UserFromUsers.Cart = UserItemAdded;
       }
+      console.log(UserFromUsers.Cart);
       // Setting Users Again After Item Added To User Cart Array
-      const Part1 = Users.slice(0, logedInUserIndex);
-      const Part2 = Obj;
+      const Part1 = Users.slice(0, LoggedIndex);
+      const Part2 = UserFromUsers;
       Part1.push(Part2);
-      const Part3 = Users.slice(logedInUserIndex + 1, Users.length);
+      const Part3 = Users.slice(LoggedIndex + 1, Users.length);
       const NewUsersArray = Part1.concat(Part3);
       //  Updating Users Array
       localStorage.setItem("Users", JSON.stringify(NewUsersArray));
-      badge.innerHTML = TotalQuantity(Users[logedInUserIndex]);
+      badge.innerHTML = TotalQuantity(Users[LoggedIndex]);
     });
   }
 };
