@@ -118,15 +118,19 @@ Logout.addEventListener("click", e => {
 });
 // Badge will used to show total product added to the cart
 const badge = document.querySelector(".badge");
+const CartButton = document.querySelector("#cart");
+CartButton.addEventListener("click", e => {
+  window.location.assign("../AddToCart/AddToCart.html");
+});
 // Targetting Span Which Will Show Name Of Currently Logedin User
 const NameSpane = document.querySelector("#userName");
 // Getting All Users-
 const Users = JSON.parse(localStorage.getItem("Users"));
 // Fetching Current User Who LogedIn From LocalStorage
 const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+
 // Getting Index Of Currently LoggedIn Users
 const LoggedIndex = Users.findIndex(User => User.email === Obj.email);
-
 // This method will count all quantity of product
 const TotalQuantity = User =>
   User.Cart.reduce((Accumalator, Current) => Accumalator + Current.quantity, 0);
@@ -206,7 +210,7 @@ const Render = Arr => {
         const UserItemAdded = Part1.concat(Part3);
         UserFromUsers.Cart = UserItemAdded;
       }
-      console.log(UserFromUsers.Cart);
+
       // Setting Users Again After Item Added To User Cart Array
       const Part1 = Users.slice(0, LoggedIndex);
       const Part2 = UserFromUsers;

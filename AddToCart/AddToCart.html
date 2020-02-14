@@ -13,6 +13,15 @@
   </head>
   <body>
     <div class="container">
+      <div class="row mt-5">
+        <div
+          class="col"
+          style="display: flex;align-items: center;justify-content: space-between;"
+        >
+          <h1><span class="badge badge-secondary"></span></h1>
+          <button class="btn btn-success btn-lg">Pay Amount</button>
+        </div>
+      </div>
       <div class="row">
         <div class="col">
           <h1 class=" text-danger text-center">Add To Cart</h1>
@@ -20,13 +29,14 @@
       </div>
       <div class="row">
         <div class="col">
-          <table class="table">
+          <table class="table table-striped table-hover table-sm">
             <thead class="thead-dark">
               <tr>
                 <th scope="col">Brand</th>
                 <th scope="col">Price</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Action</th>
+                <th scope="col">Delete</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -35,7 +45,7 @@
       </div>
     </div>
     <!-- Scripts -->
-    <script src="./ShoppingCart.js"></script>
+    <script src="./AddToCart.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
       integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
