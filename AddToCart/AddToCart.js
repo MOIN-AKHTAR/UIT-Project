@@ -113,4 +113,49 @@ const Render = User => {
   }
 };
 
+// Payment Paying Method
+const PaymentBtn = document.querySelector("#Payment");
+PaymentBtn.addEventListener("click", e => {
+  // Getting All Users-
+  const Users = JSON.parse(localStorage.getItem("Users")) || [];
+  // Fetching Current User Who LogedIn From LocalStorage
+  const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+  //   Finding That LoggedIn User Exists In Users Array Or Not
+  const User = Users.find(user => user.email === Obj.email);
+  //   Finding The INdex Of LoggedIn User So That We Can Easily Update Users Array
+  const Index = Users.findIndex(user => user.email === Obj.email);
+  if (Users.length > 0) {
+    if (User == null) {
+      ShowMessage(
+        "You Are Not Logged In",
+        "red",
+        "alert-danger",
+        "MoveToSignUp"
+      );
+    } else {
+      if (User.Cart.length > 0) {
+        //   Updating Users Array And User Cart Who Is Logged In
+        User.Cart = [];
+        const Part1 = Users.slice(0, Index);
+        const Part2 = User;
+        const Part3 = Users.slice(Index + 1, Users.length);
+        Part1.push(Part2);
+        const NewUsersArray = Part1.concat(Part3);
+        localStorage.setItem("Users", JSON.stringify(NewUsersArray));
+        JSON.parse(localStorage.getItem("Users"));
+        ShowMessage(
+          "Paid Successfully!!!",
+          "blue",
+          "alert-primary",
+          "MoveToShoppingCart"
+        );
+        Body.innerHTML = "";
+      } else {
+        ShowMessage("Nothig To Pay First Add Item To Cart");
+      }
+    }
+  } else {
+    ShowMessage("You Are Not Logged In", "red", "alert-danger", "MoveToSignUp");
+  }
+});
 CheckLogin();

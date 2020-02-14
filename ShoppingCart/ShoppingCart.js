@@ -125,7 +125,7 @@ CartButton.addEventListener("click", e => {
 // Targetting Span Which Will Show Name Of Currently Logedin User
 const NameSpane = document.querySelector("#userName");
 // Getting All Users-
-const Users = JSON.parse(localStorage.getItem("Users"));
+const Users = JSON.parse(localStorage.getItem("Users")) || [];
 // Fetching Current User Who LogedIn From LocalStorage
 const Obj = JSON.parse(localStorage.getItem("LoginUser"));
 
