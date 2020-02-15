@@ -116,36 +116,41 @@ Logout.addEventListener("click", e => {
   localStorage.removeItem("LoginUser");
   window.location.assign("../SignUp/SignUp.html");
 });
-// Badge will used to show total product added to the cart
-const badge = document.querySelector(".badge");
-const CartButton = document.querySelector("#cart");
-CartButton.addEventListener("click", e => {
-  window.location.assign("../AddToCart/AddToCart.html");
-});
-// Targetting Span Which Will Show Name Of Currently Logedin User
-const NameSpane = document.querySelector("#userName");
-// Getting All Users-
-const Users = JSON.parse(localStorage.getItem("Users")) || [];
-// Fetching Current User Who LogedIn From LocalStorage
-const Obj = JSON.parse(localStorage.getItem("LoginUser"));
-
-// Getting Index Of Currently LoggedIn Users
-const LoggedIndex = Users.findIndex(User => User.email === Obj.email);
 // This method will count all quantity of product
 const TotalQuantity = User =>
   User.Cart.reduce((Accumalator, Current) => Accumalator + Current.quantity, 0);
 // This method will make the total of item you added to cart
 const TotalAmount = User =>
   User.Cart.reduce((Accumalator, Current) => Accumalator + Current.total, 0);
-
-if (Obj) {
-  NameSpane.innerHTML = Obj.firstName + " " + Obj.lastName;
-
-  badge.innerHTML = TotalQuantity(Users[LoggedIndex]);
-} else {
-  window.location.assign("../SignUp/SignUp.html");
-}
-
+// Badge will used to show total product added to the cart
+const badge = document.querySelector(".badge");
+const CartButton = document.querySelector("#cart");
+CartButton.addEventListener("click", e => {
+  const Users = JSON.parse(localStorage.getItem("Users")) || [];
+  if (Users.length == 0) {
+    const Body = document.querySelector("body");
+    Body.innerHTML = "";
+    ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
+  } else {
+    // Fetching Current User Who LogedIn From LocalStorage
+    const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+    if (Obj == null) {
+      const Body = document.querySelector("body");
+      Body.innerHTML = "";
+      ShowMessage(
+        "You Are Not LoggedIn",
+        "red",
+        "alert-danger",
+        "MoveToSignUp"
+      );
+    } else {
+      window.location.assign("../AddToCart/AddToCart.html");
+    }
+  }
+});
+// Targetting Span Which Will Show Name Of Currently Logedin User
+const NameSpane = document.querySelector("#userName");
+// Our Render Function
 const Render = Arr => {
   const Column = document.querySelector("#row");
   // Rendering Of All Product Present In Arr Array
@@ -177,50 +182,98 @@ const Render = Arr => {
     // End Rendering
     // Adding Event For Button Add To Cart Of Each Product
     Button.addEventListener("click", e => {
-      // First Checking If User LoggedIn Then He/She Will Be Allowed To Go For Furthur Process Otherwise Go Back To SignUp Page
-      if (Obj) {
-        NameSpane.innerHTML = Obj.firstName + " " + Obj.lastName;
-      } else {
-        window.location.assign("../SignUp/SignUp.html");
-      }
-      // Getting Object Of User Who Is LoggedIn From Users Array Stored In Local Storage
-      const UserFromUsers = Users.find(users => users.email === Obj.email);
-      // Checking For The Existance Of Item Which We Are Trying To Add To User Object's Cart So That We Can Set Quantity Pefectly-
-      const Index = UserFromUsers.Cart.findIndex(
-        Item => Item.id === Arr[index].id
-      );
-      let Item = Arr.find(Item => Item.id === Arr[index].id);
-      if (Index < 0) {
-        // If Item Is Not Already In The User Cart Array Then This Code Will Run
-        Item.quantity = 1;
-        Item.total = Item.price;
-        UserFromUsers.Cart.push(Item);
-      } else {
-        // If Item I Already In The User Cart Array Then This Code Will Run
-        Item.quantity = UserFromUsers.Cart[Index].quantity + 1;
-        Item.total = Item.price * Item.quantity;
-        // Updating Cart Of User Who Is LogedIn
-        const Part1 = UserFromUsers.Cart.slice(0, Index);
-        const Part2 = Item;
-        Part1.push(Part2);
-        const Part3 = UserFromUsers.Cart.slice(
-          Index + 1,
-          UserFromUsers.Cart.length
+      const Users = JSON.parse(localStorage.getItem("Users")) || [];
+      if (Users.length == 0) {
+        const Body = document.querySelector("body");
+        Body.innerHTML = "";
+        ShowMessage(
+          "You Are Not LoggedIn",
+          "red",
+          "alert-danger",
+          "MoveToSignUp"
         );
-        const UserItemAdded = Part1.concat(Part3);
-        UserFromUsers.Cart = UserItemAdded;
-      }
+      } else {
+        const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+        if (Obj == null) {
+          const Body = document.querySelector("body");
+          Body.innerHTML = "";
+          ShowMessage(
+            "You Are Not LoggedIn",
+            "red",
+            "alert-danger",
+            "MoveToSignUp"
+          );
+        } else {
+          NameSpane.innerHTML = Obj.firstName + " " + Obj.lastName;
+          // Getting Object Of User Who Is LoggedIn From Users Array Stored In Local Storage
+          const UserFromUsers = Users.find(users => users.email === Obj.email);
+          const LoggedIndex = Users.findIndex(
+            users => users.email === Obj.email
+          );
+          // Checking For The Existance Of Item Which We Are Trying To Add To User Object's Cart So That We Can Set Quantity Pefectly-
+          const Index = UserFromUsers.Cart.findIndex(
+            Item => Item.id === Arr[index].id
+          );
+          let Item = Arr.find(Item => Item.id === Arr[index].id);
+          if (Index < 0) {
+            // If Item Is Not Already In The User Cart Array Then This Code Will Run
+            Item.quantity = 1;
+            Item.total = Item.price;
+            UserFromUsers.Cart.push(Item);
+          } else {
+            // If Item I Already In The User Cart Array Then This Code Will Run
+            Item.quantity = UserFromUsers.Cart[Index].quantity + 1;
+            Item.total = Item.price * Item.quantity;
+            // Updating Cart Of User Who Is LogedIn
+            const Part1 = UserFromUsers.Cart.slice(0, Index);
+            const Part2 = Item;
+            Part1.push(Part2);
+            const Part3 = UserFromUsers.Cart.slice(
+              Index + 1,
+              UserFromUsers.Cart.length
+            );
+            const UserItemAdded = Part1.concat(Part3);
+            UserFromUsers.Cart = UserItemAdded;
+          }
 
-      // Setting Users Again After Item Added To User Cart Array
-      const Part1 = Users.slice(0, LoggedIndex);
-      const Part2 = UserFromUsers;
-      Part1.push(Part2);
-      const Part3 = Users.slice(LoggedIndex + 1, Users.length);
-      const NewUsersArray = Part1.concat(Part3);
-      //  Updating Users Array
-      localStorage.setItem("Users", JSON.stringify(NewUsersArray));
-      badge.innerHTML = TotalQuantity(Users[LoggedIndex]);
+          // Setting Users Again After Item Added To User Cart Array
+          const Part1 = Users.slice(0, LoggedIndex);
+          const Part2 = UserFromUsers;
+          Part1.push(Part2);
+          const Part3 = Users.slice(LoggedIndex + 1, Users.length);
+          const NewUsersArray = Part1.concat(Part3);
+          //  Updating Users Array
+          localStorage.setItem("Users", JSON.stringify(NewUsersArray));
+          badge.innerHTML = TotalQuantity(Users[LoggedIndex]);
+        }
+      }
     });
   }
 };
-Render(Arr);
+// Getting All Users-
+const Users = JSON.parse(localStorage.getItem("Users")) || [];
+if (Users.length > 0) {
+  // Fetching Current User Who LogedIn From LocalStorage
+  const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+  if (Obj == null) {
+    const Body = document.querySelector("body");
+    Body.innerHTML = "";
+    ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
+  } else {
+    // Getting Index Of Currently LoggedIn Users
+    const LoggedIndex = Users.findIndex(User => User.email === Obj.email);
+
+    if (Obj) {
+      NameSpane.innerHTML = Obj.firstName + " " + Obj.lastName;
+
+      badge.innerHTML = TotalQuantity(Users[LoggedIndex]);
+    } else {
+      window.location.assign("../SignUp/SignUp.html");
+    }
+    Render(Arr);
+  }
+} else {
+  const Body = document.querySelector("body");
+  Body.innerHTML = "";
+  ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
+}

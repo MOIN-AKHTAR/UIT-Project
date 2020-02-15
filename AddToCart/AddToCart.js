@@ -28,24 +28,44 @@ const CheckLogin = () => {
 };
 // Update The Table Of Add To Cart
 const UpdateTable = (User, index, LoggedIndex, Role) => {
-  if (Role === "AddToCart") {
-    User.Cart[index].quantity += 1;
-  } else {
-    if (User.Cart[index].quantity > 1) {
-      User.Cart[index].quantity -= 1;
+  const Users = JSON.parse(localStorage.getItem("Users")) || [];
+  if (Users.length > 0) {
+    const LogedIn = JSON.parse(localStorage.getItem("LoginUser"));
+    if (LogedIn == null) {
+      const Body = document.querySelector("body");
+      Body.innerHTML = "";
+      ShowMessage(
+        "You Are Not LoggedIn",
+        "red",
+        "alert-danger",
+        "MoveToSignUp"
+      );
+    } else {
+      if (Role === "AddToCart") {
+        User.Cart[index].quantity += 1;
+      } else {
+        if (User.Cart[index].quantity > 1) {
+          User.Cart[index].quantity -= 1;
+        }
+      }
+      User.Cart[index].total =
+        User.Cart[index].price * User.Cart[index].quantity;
+      const Part1 = Users.slice(0, LoggedIndex);
+      const Part2 = User;
+      const Part3 = Users.slice(LoggedIndex + 1, Users.length);
+      Part1.push(Part2);
+      const NewUsersArray = Part1.concat(Part3);
+      localStorage.setItem("Users", JSON.stringify(NewUsersArray));
+      const NewUsers = JSON.parse(localStorage.getItem("Users"));
+      Body.innerHTML = "";
+      window.location.reload(true);
+      Render(NewUsers[LoggedIndex]);
     }
+  } else {
+    const Body = document.querySelector("body");
+    Body.innerHTML = "";
+    ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
   }
-  User.Cart[index].total = User.Cart[index].price * User.Cart[index].quantity;
-  const Part1 = Users.slice(0, LoggedIndex);
-  const Part2 = User;
-  const Part3 = Users.slice(LoggedIndex + 1, Users.length);
-  Part1.push(Part2);
-  const NewUsersArray = Part1.concat(Part3);
-  localStorage.setItem("Users", JSON.stringify(NewUsersArray));
-  const NewUsers = JSON.parse(localStorage.getItem("Users"));
-  Body.innerHTML = "";
-  window.location.reload(true);
-  Render(NewUsers[LoggedIndex]);
 };
 // Delete Item From Table
 const DeleteItem = Item => {
@@ -95,20 +115,45 @@ const Render = User => {
       UpdateTable(User, index, LoggedIndex, "RemoveToCart");
     });
     Delete.addEventListener("click", e => {
-      // Making A Copy Of Cart By Deleting The INtended Item From Cart
-      const Part1 = User.Cart.slice(0, index);
-      const Part2 = User.Cart.slice(index + 1, User.Cart.length);
-      User.Cart = Part1.concat(Part2);
-      const Users = JSON.parse(localStorage.getItem("Users"));
-      const P1 = Users.slice(0, LoggedIndex);
-      P1.push(User);
-      const NewUsersArray = P1.concat(
-        Users.slice(LoggedIndex + 1, Users.length)
-      );
-      localStorage.setItem("Users", JSON.stringify(NewUsersArray));
-      Body.innerHTML = "";
-      window.location.reload(true);
-      Render(NewUsersArray[LoggedIndex]);
+      const Users = JSON.parse(localStorage.getItem("Users")) || [];
+      if (Users.length > 0) {
+        // Fetching Current User Who LogedIn From LocalStorage
+        const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+        if (User == null) {
+          const Body = document.querySelector("body");
+          Body.innerHTML = "";
+          ShowMessage(
+            "You Are Not LoggedIn",
+            "red",
+            "alert-danger",
+            "MoveToSignUp"
+          );
+        } else {
+          // Making A Copy Of Cart By Deleting The INtended Item From Cart
+          const Part1 = User.Cart.slice(0, index);
+          const Part2 = User.Cart.slice(index + 1, User.Cart.length);
+          User.Cart = Part1.concat(Part2);
+
+          const P1 = Users.slice(0, LoggedIndex);
+          P1.push(User);
+          const NewUsersArray = P1.concat(
+            Users.slice(LoggedIndex + 1, Users.length)
+          );
+          localStorage.setItem("Users", JSON.stringify(NewUsersArray));
+          Body.innerHTML = "";
+          window.location.reload(true);
+          Render(NewUsersArray[LoggedIndex]);
+        }
+      } else {
+        const Body = document.querySelector("body");
+        Body.innerHTML = "";
+        ShowMessage(
+          "You Are Not LoggedIn",
+          "red",
+          "alert-danger",
+          "MoveToSignUp"
+        );
+      }
     });
   }
 };
@@ -118,21 +163,25 @@ const PaymentBtn = document.querySelector("#Payment");
 PaymentBtn.addEventListener("click", e => {
   // Getting All Users-
   const Users = JSON.parse(localStorage.getItem("Users")) || [];
-  // Fetching Current User Who LogedIn From LocalStorage
-  const Obj = JSON.parse(localStorage.getItem("LoginUser"));
-  //   Finding That LoggedIn User Exists In Users Array Or Not
-  const User = Users.find(user => user.email === Obj.email);
-  //   Finding The INdex Of LoggedIn User So That We Can Easily Update Users Array
-  const Index = Users.findIndex(user => user.email === Obj.email);
   if (Users.length > 0) {
-    if (User == null) {
+    const LogedIn = JSON.parse(localStorage.getItem("LoginUser"));
+    if (LogedIn == null) {
+      const Body = document.querySelector("body");
+      Body.innerHTML = "";
       ShowMessage(
-        "You Are Not Logged In",
+        "You Are Not LoggedIn",
         "red",
         "alert-danger",
         "MoveToSignUp"
       );
     } else {
+      // Fetching Current User Who LogedIn From LocalStorage
+      const Obj = JSON.parse(localStorage.getItem("LoginUser"));
+      //   Finding That LoggedIn User Exists In Users Array Or Not
+      const User = Users.find(user => user.email === Obj.email);
+
+      //   Finding The INdex Of LoggedIn User So That We Can Easily Update Users Array
+      const Index = Users.findIndex(user => user.email === Obj.email);
       if (User.Cart.length > 0) {
         //   Updating Users Array And User Cart Who Is Logged In
         User.Cart = [];
@@ -155,7 +204,9 @@ PaymentBtn.addEventListener("click", e => {
       }
     }
   } else {
-    ShowMessage("You Are Not Logged In", "red", "alert-danger", "MoveToSignUp");
+    const Body = document.querySelector("body");
+    Body.innerHTML = "";
+    ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
   }
 });
 CheckLogin();
