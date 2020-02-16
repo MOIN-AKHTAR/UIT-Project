@@ -148,6 +148,7 @@ if (Obj) {
 
 const Render = Arr => {
   const Column = document.querySelector("#row");
+  Column.innerHTML = "";
   // Rendering Of All Product Present In Arr Array
   for (let index = 0; index < Arr.length; index++) {
     const Div = document.createElement("div");
@@ -223,4 +224,12 @@ const Render = Arr => {
     });
   }
 };
+// Search Item Input
+const SearchItem = document.querySelector("#SearchItem");
+SearchItem.addEventListener("keydown", e => {
+  const ItemToBeRender = Arr.filter(Item =>
+    Item.category.includes(e.target.value.toLowerCase())
+  );
+  Render(ItemToBeRender);
+});
 Render(Arr);
