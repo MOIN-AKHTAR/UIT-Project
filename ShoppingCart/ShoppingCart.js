@@ -153,6 +153,7 @@ const NameSpane = document.querySelector("#userName");
 // Our Render Function
 const Render = Arr => {
   const Column = document.querySelector("#row");
+  Column.innerHTML = "";
   // Rendering Of All Product Present In Arr Array
   for (let index = 0; index < Arr.length; index++) {
     const Div = document.createElement("div");
@@ -250,6 +251,7 @@ const Render = Arr => {
     });
   }
 };
+<<<<<<< HEAD
 // Getting All Users-
 const Users = JSON.parse(localStorage.getItem("Users")) || [];
 if (Users.length > 0) {
@@ -277,3 +279,14 @@ if (Users.length > 0) {
   Body.innerHTML = "";
   ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
 }
+=======
+// Search Item Input
+const SearchItem = document.querySelector("#SearchItem");
+SearchItem.addEventListener("keydown", e => {
+  const ItemToBeRender = Arr.filter(Item =>
+    Item.category.includes(e.target.value.toLowerCase())
+  );
+  Render(ItemToBeRender);
+});
+Render(Arr);
+>>>>>>> developement
