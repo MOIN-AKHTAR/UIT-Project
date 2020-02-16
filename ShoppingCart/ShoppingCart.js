@@ -251,7 +251,6 @@ const Render = Arr => {
     });
   }
 };
-<<<<<<< HEAD
 // Getting All Users-
 const Users = JSON.parse(localStorage.getItem("Users")) || [];
 if (Users.length > 0) {
@@ -279,7 +278,6 @@ if (Users.length > 0) {
   Body.innerHTML = "";
   ShowMessage("You Are Not LoggedIn", "red", "alert-danger", "MoveToSignUp");
 }
-=======
 // Search Item Input
 const SearchItem = document.querySelector("#SearchItem");
 SearchItem.addEventListener("keydown", e => {
@@ -289,4 +287,3 @@ SearchItem.addEventListener("keydown", e => {
   Render(ItemToBeRender);
 });
 Render(Arr);
->>>>>>> developement
